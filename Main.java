@@ -15,8 +15,10 @@ public class Main {
 
         // Let the user play the game
         System.out.println("\nYou find yourself in the forest. What do you do?");
-        while (takeAction(getChoice(scanner), playerMap)) {
-            System.out.println("");
+        checkMap(playerMap);
+        while (takeAction(getChoice(scanner), playerMap, scanner)) {
+            System.out.println("\n");
+            checkMap(playerMap);
         }
         
         // Close the scanner and the program is over
@@ -122,6 +124,7 @@ public class Main {
 
         }
 
+        playerMap.put("Location", 0);
         return playerMap;
     }
 
@@ -130,13 +133,11 @@ public class Main {
 
         // Show options to player
         System.out.println("Options: ");
-        System.out.println("1) Check map");
-        System.out.println("2) Move");
-        System.out.println("3) Investigate area");
-        System.out.println("4) Check inventory");
-        System.out.println("5) Use main weapon");
-        System.out.println("6) Use secondary weapon");
-        System.out.println("7) Quit game");
+        System.out.println("1) Move");
+        System.out.println("2) Investigate area");
+        System.out.println("3) Use main weapon");
+        System.out.println("4) Use secondary weapon");
+        System.out.println("5) Quit game");
         byte choice = 0;
 
         // Make sure the input is a number and it's within the provided range
@@ -145,7 +146,7 @@ public class Main {
             try {
                 System.out.print(" < ");
                 choice = scanner.nextByte();
-                if (0 < choice && choice < 8) {
+                if (0 < choice && choice < 6) {
                     validInput = true;}
                 else {
                     System.out.println("Invalid input. Please enter a number within the given range.");
@@ -156,38 +157,30 @@ public class Main {
                 scanner.nextLine();
             }
         }
-
+        System.out.println("\n");
         return choice;
     }
 
     // This function enacts the action chosen by the player
-    public static boolean takeAction(byte choice, Map <String, Object> player) {
+    public static boolean takeAction(byte choice, Map <String, Object> player, Scanner scanner) {
         switch (choice) {
             case 1:
-                // Check map
-                checkMap(player);
+                // Move
+                move(player, scanner);
                 return true;
             case 2:
-                // Move
-                move(player);
-                return true;
-            case 3:
                 // Investigate area
                 investigate(player);
                 return true;
-            case 4:
-                // Check Inventory
-                checkInventory(player);
-                return true;
-            case 5:
+            case 3:
                 // Use main weapon
                 useMainWeapon(player);
                 return true;
-            case 6:
+            case 4:
                 // Use secondary weapon
                 useSecondaryWeapon(player);
                 return true;
-            case 7:
+            case 5:
                 // Quit game
                 System.out.println("You quit the game");
                 return false;
@@ -199,32 +192,175 @@ public class Main {
 
     // This function shows the map to the player
     public static void checkMap(Map <String, Object> player) {
-        System.out.println("You check your map");
+        for (int x = 0; x < 4; x++) {
+            for (int i = 0; i < 44; i++) { System.out.print("-");}
+            System.out.print("\n");
+            for (int i = 0; i < 4; i++) {
+                System.out.print((x * 5) + i);
+                if (x == 2 && i == 1) {System.out.print(" Cliff  |");}
+                else {System.out.print(" Forest |");} }
+            System.out.print((x * 5) + 4);
+            System.out.print("Forest\n");
+            for (int i = 0; i < 5; i++) { 
+                if (i != 0) { System.out.print("|");}
+                if ((x * 5) + i == (int)player.get("Location")) {
+                    // The player is here
+                    System.out.print("  You   ");
+                }
+                else {
+                    System.out.print("        ");
+                }
+            }
+            System.out.print("\n");
+        }
+        for (int i = 0; i < 44; i++) { System.out.print("-");}
+        System.out.print("\n");
     }
 
     // This function lets the player move
-    public static void move(Map <String, Object> player) {
-        System.out.println("You move");
+    public static void move(Map <String, Object> player, Scanner scanner) {
+        System.out.println("Where do you want to move?");
+        System.out.println("1) North");
+        System.out.println("2) East");
+        System.out.println("3) South");
+        System.out.println("4) West");
+        byte choice = 0;
+        int location = (int)player.get("Location");
+
+        // Make sure the input is a number and it's within the provided range
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                System.out.print(" < ");
+                choice = scanner.nextByte();
+                if (0 > choice || choice > 5) {
+                    System.out.println("Invalid input. Please enter a number within the given range.");
+                }
+                else if (choice == 1 && location < 5) {
+                    System.out.println("You can't move any further north. Please enter another direction.");
+                }
+                else if (choice == 2 && (location % 5) == 4) {
+                    System.out.println("You can't move any further east. Please enter another direction.");
+                }
+                else if (choice == 3 && location > 14) {
+                    System.out.println("You can't move any further south. Please enter another direction.");
+                }
+                else if (choice == 4 && (location % 5) == 0) {
+                    System.out.println("You can't move any further west. Please enter another direction.");
+                }
+                else {
+                    validInput = true;
+                }
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter the number of the class you'd like.");
+                scanner.nextLine();
+            }
+        }
+
+        switch (choice) {
+            case 1:
+                location -= 5;
+                System.out.println("You moved to the north.");
+                break;
+            case 2:
+                location += 1;
+                System.out.println("You moved to the east.");
+                break;
+            case 3:
+                location += 5;
+                System.out.println("You moved to south.");
+                break;
+            case 4:
+                location -= 1;
+                System.out.println("You moved to west.");
+                break;
+            default:
+        }
+        
+        player.put("Location", location);
+        passiveCheck(player);
     }
 
     // This function tests if the player notices anything from their location
     public static void investigate(Map <String, Object> player) {
         System.out.println("You investigate the area");
+        int location = (int)player.get("Location");
+        
+        if (location == 11) {
+            System.out.println("You see a goblin camp over the cliff, to the east.");
+        }
+        else if (location == 6) {
+            System.out.println("You hear some creatures to the south east.");
+        }
+        else if (location == 16) {
+            System.out.println("You hear some creatures to the north east.");
+        }
+        else if (location == 7 || location == 8 || location == 13 || location == 17 || location == 18) {
+            System.out.println("You hear goblins to the east of the cliff.");
+        }
+        else if (location == 9 || location == 14 || location == 19 ) {
+            System.out.println("You hear some creatures to the west.");
+        }
+        else if (location == 12) {
+            System.out.println("You are in a goblin camp. There are two goblins.");
+        }
+        else if (location == 4) {
+            System.out.println("You find a chest.");
+        }
+        else {
+            System.out.println("You are in the forest");
+        }
+        
     }
 
-    // This function shows the player their inventory
-    public static void checkInventory(Map <String, Object> player) {
-        System.out.println("You check your inventory");
+    public static void passiveCheck(Map <String, Object> player) {
+        int location = (int)player.get("Location");
+        
+        if (location == 11) {
+            System.out.println("You are on a cliff.");
+        }
+        else if (location == 6 || location == 16) {
+            System.out.println("You hear something nearby.");
+        }
+        else if (location == 7 || location == 8 || location == 13 || location == 17 || location == 18) {
+            System.out.println("You hear goblins near you.");
+        }
+        else if (location == 9 || location == 14 || location == 19 ) {
+            System.out.println("You hear something to the west.");
+        }
+        else if (location == 12) {
+            System.out.println("You are in a goblin camp.");
+        }
+        else if (location == 4) {
+            System.out.println("You find a chest.");
+        }
+        else {
+            System.out.println("You are in the forest");
+        }
+        
     }
 
     // This function uses the player's main weapon
     public static void useMainWeapon(Map <String, Object> player) {
-        System.out.println("You use the main weapon");
+        if ((byte)player.get("Location") == 12) {
+            System.out.println("You use the main weapon"); }
+        else if ((byte)player.get("Location") == 11 && player.get("Class") == "Archer") {
+            System.out.println("You use the main weapon.");
+        }
+        else {
+            System.out.println("You have nothing to use the main weapon on.");
+        }
     }
 
     // This function uses the player's secondary weapon
     public static void useSecondaryWeapon(Map <String, Object> player) {
-        System.out.println("You use the secondary weapon");
+        if ((byte)player.get("Location") == 12) {
+            System.out.println("You use the secondary weapon"); }
+        else if ((byte)player.get("Location") == 11 && player.get("Class") == "Rogue") {
+            System.out.println("You use the secondary weapon.");
+        }
+        System.out.println("You have nothing to use the secondary weapon on.");
     }
 
 
