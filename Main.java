@@ -116,8 +116,8 @@ public class Main {
 
         }
 
-        playerMap.put("Location", 7);
-        playerMap.put("GoblinHP", 10);
+        playerMap.put("Location", 0);
+        playerMap.put("GoblinHP", 12);
         return playerMap;
     }
 
@@ -188,11 +188,10 @@ public class Main {
             for (int i = 0; i < 44; i++) { System.out.print("-");}
             System.out.print("\n");
             for (int i = 0; i < 4; i++) {
-                System.out.print((x * 5) + i);
                 if (x == 2 && i == 1) {System.out.print(" Cliff  |");}
-                else {System.out.print(" Forest |");} }
-            System.out.print((x * 5) + 4);
-            System.out.print("Forest\n");
+                else {System.out.print(" Forest |");} 
+            }
+            System.out.print(" Forest\n");
             for (int i = 0; i < 5; i++) { 
                 if (i != 0) { System.out.print("|");}
                 if ((x * 5) + i == (int)player.get("Location")) {
@@ -274,7 +273,7 @@ public class Main {
                 break;
             default:
         }
-        
+
         return movementCheck(player, location, scanner);
     }
 
