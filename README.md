@@ -6,9 +6,7 @@ This program is a basic RPG. There is a small map that the player can move aroun
 
 My purpose of writing this software was to get familiar with the Java language. I wanted to use as much of the language as I could in a real situation for a good introduction to Java.
 
-{Provide a link to your YouTube demonstration. It should be a 4-5 minute demo of the software running and a walkthrough of the code. Focus should be on sharing what you learned about the language syntax.}
-
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/saTnU1TOyLs)
 
 # Development Environment
 
